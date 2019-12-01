@@ -1,0 +1,53 @@
+-------------------------
+Design Patterns 2019
+-------------------------
+
+Project Abstract 
+
+-> Team Number  : 23
+
+-> Team Members : 
+    
+    Aishwarya PS        01FB16ECS035
+    Abhishek Saseendran 01FB16ECS018
+
+-> Project Title : Emulating a Computer System/CPU 
+
+-> Abstract : 
+    programming language  :  c++
+
+    Idea of the project is to develop interfaces for the different components of a computer system in the low level 
+    And define implementations to define their behavior and how they interact with each other.
+    
+    The different components under consideration are : 
+        - Client component
+        - CPU component 
+        - Input-Output Devices 
+        - I/O buffer components
+        - DMA component
+        - CPU Scheduling component 
+        - Cache component      
+        - Memory component     
+        - BUS and PORTS
+    
+    The Design Patterns that can be implemented for such a system includes : 
+        Creational DP  {
+                            - Singleton // for all those cpu,dma ,etc where one instance is needed
+                            - factory method  // buffer class - > giving both output buffer and input buffer
+                                              // cache class  - > giving l1,l2,l3 cache
+                            - prototype // cloning mem classes for threads of same process  
+                       }
+        
+        Structural DP {
+                            - Adapters // needed btw diff components for communication
+                      }        
+
+        Behavioral DP {
+                            - template // dma and I/O queue can be modeled under one template 
+                                       // or even BUS and PORTS
+                                       // cache and main mem
+                            - strategy // for cpu scheduling algos 
+                            - iterator // within mem components to fetch next block 
+                      }
+
+
