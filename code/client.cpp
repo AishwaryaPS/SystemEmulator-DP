@@ -34,12 +34,23 @@ int main(){
 
     delete myIoDevice;
 
+    #ifdef EXCEPTION_CASES
     type = notSupportedDevice;
     myIoDevice = ioDevice::create(type); 
     myIoDevice->whoami();
 
     delete myIoDevice;
+    #endif
 
+    
+    type = typeMouse;
+    myIoDevice = ioDevice::create(type); 
+
+    myIoDevice->startApplication("Browser");
+
+    myIoDevice->startApplication("Paint");
+
+    delete myIoDevice;
 
     return 0;
 }

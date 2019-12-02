@@ -16,6 +16,7 @@ ioDevice :: ioDevice(){
     #ifdef DEBUG
     cout << "ioDevice ctor \n";
     #endif 
+
 }
 
 ioDevice :: ~ioDevice(){
@@ -69,13 +70,13 @@ keyboard :: ~keyboard(){
     #ifdef DEBUG
     cout << "keyboard  dtor \n";
     #endif
+    keyboard :: _instance = nullptr;
 }
 void keyboard :: whoami(){
     cout << "ioDevice : keyboard \n"; 
 }
-int keyboard :: startApplication(int applicationNumber){
+void keyboard :: startApplication(string application){
     cout << "Event triggered by keyboard\n";
-    return 1;
 }
 
 keyboard* keyboard:: createInstance(){
@@ -95,22 +96,29 @@ keyboard* keyboard:: createInstance(){
 /*
 mouse implementations ---------------------------------------------------------------------------
 */
+int ioDevice::count = 0;
 mouse :: mouse(){
+    
+    portNum = ioDevice::count;
+    ++ioDevice::count;
+
     #ifdef DEBUG
-    cout << "mouse  ctor \n";
+    cout << "mouse  ctor  -- portNum: "<<portNum<<"\n" ;
     #endif
+
 }
 mouse :: ~mouse(){
     #ifdef DEBUG
     cout << "mouse  dtor \n";
     #endif
+    mouse :: _instance = nullptr;
 }
 void mouse :: whoami(){
     cout << "ioDevice : mouse \n"; 
 }
-int mouse :: startApplication(int applicationNumber){
-    cout << "Event triggered by mouse\n";
-    return 1;
+void mouse :: startApplication(string application){
+    cout << "Event triggered by mouse : "<<application<<"\n";
+    doubleClick(application);
 }
 
 mouse* mouse:: createInstance(){
@@ -121,8 +129,46 @@ mouse* mouse:: createInstance(){
         #endif
 
         mouse :: _instance = new mouse();
-
     }
 
     return mouse :: _instance;
+}
+
+void mouse :: doubleClick(string application){
+    #ifdef DEBUG
+    cout << "double click method called\n";
+    #endif
+    port* adaptor  = new port(portNum);
+    adaptor->startApplication(application);
+}
+
+
+
+
+/*
+port adaptor implementations ---------------------------------------------------------------------------
+*/
+port :: port(int portNum): bus(portNum, "") {
+    #ifdef DEBUG
+    cout << "port adaptor ctor - for port  no : "<<portNum<<"\n";
+    #endif
+    }
+
+port :: ~port(){
+    #ifdef DEBUG
+    cout << "port dtor\n";
+    #endif
+}
+
+void port :: startApplication(string application){
+    this->application= application;
+    #ifdef DEBUG
+    cout <<"port start application triggered\n";
+    cout <<"inturn calling storeToMemory of bus\n";
+    #endif
+    storeToMemory();
+}
+
+void port :: whoami(){
+    cout <<"port adaptor\n";
 }
