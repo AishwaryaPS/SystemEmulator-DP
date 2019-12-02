@@ -10,7 +10,7 @@ keyboard -> click enter
 mouse    -> double right click 
 */
 enum deviceType{
-    typeKeyboard, typeMouse
+    typeKeyboard, typeMouse , notSupportedDevice
 };
 
 

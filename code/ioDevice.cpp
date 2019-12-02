@@ -50,7 +50,7 @@ ioDevice* ioDevice :: create(deviceType type){
         #ifdef DEBUG
         cout << "create -> invlaid type \n";
         #endif
-        return nullptr;
+        throw invalid_argument("Device type specified not supported :(");
     }
 }
 

@@ -33,8 +33,12 @@ int main(){
     myIoDevice->whoami();
 
     delete myIoDevice;
-    
 
+    type = notSupportedDevice;
+    myIoDevice = ioDevice::create(type); 
+    myIoDevice->whoami();
+
+    delete myIoDevice;
 
 
     return 0;
