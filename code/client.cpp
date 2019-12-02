@@ -43,7 +43,7 @@ int main(){
     #endif
 
     
-    type = typeMouse;
+    type = typeKeyboard;
     myIoDevice = ioDevice::create(type); 
 
     myIoDevice->startApplication("Browser");

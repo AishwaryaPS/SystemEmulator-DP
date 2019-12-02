@@ -8,6 +8,7 @@ and assigned  nullptr
 keyboard* keyboard :: _instance = nullptr;
 mouse* mouse :: _instance = nullptr;
 
+int ioDevice::count = 0;
 
 /*
 ioDevice implementations ---------------------------------------------------------------------------
@@ -30,7 +31,7 @@ factory method to create io device required
 */
 ioDevice* ioDevice :: create(deviceType type){
     #ifdef DEBUG
-    cout << "type :"<< type <<"\n";
+    cout << "\nSTEP 1 : create IO Obj for type :"<< type <<"\n";
     #endif
     switch(type){
         case typeKeyboard :
@@ -64,6 +65,9 @@ keyboard :: keyboard(){
     #ifdef DEBUG
     cout << "keyboard  ctor \n";
     #endif
+
+    portNum = ioDevice::count;
+    ++ioDevice::count;
 }
 
 keyboard :: ~keyboard(){
@@ -77,6 +81,10 @@ void keyboard :: whoami(){
 }
 void keyboard :: startApplication(string application){
     cout << "Event triggered by keyboard\n";
+    #ifdef DEBUG
+    cout << "\nSTEP 2 : Io Obj triggers event\n";
+    #endif
+    clickEnter(application);
 }
 
 keyboard* keyboard:: createInstance(){
@@ -93,10 +101,19 @@ keyboard* keyboard:: createInstance(){
     return keyboard :: _instance;
 }
 
+void keyboard :: clickEnter(string application){
+    #ifdef DEBUG
+    cout << "click Enter method called\n";
+    #endif
+    port* adaptor  = new port(portNum);
+    adaptor->startApplication(application);    
+}
+
+
 /*
 mouse implementations ---------------------------------------------------------------------------
 */
-int ioDevice::count = 0;
+
 mouse :: mouse(){
     
     portNum = ioDevice::count;
@@ -118,6 +135,9 @@ void mouse :: whoami(){
 }
 void mouse :: startApplication(string application){
     cout << "Event triggered by mouse : "<<application<<"\n";
+    #ifdef DEBUG
+    cout << "\nSTEP 2 : Io Obj triggers event\n";
+    #endif
     doubleClick(application);
 }
 
@@ -163,7 +183,7 @@ port :: ~port(){
 void port :: startApplication(string application){
     this->application= application;
     #ifdef DEBUG
-    cout <<"port start application triggered\n";
+    cout <<"\nSTEP 3 : port calls startapplication \n";
     cout <<"inturn calling storeToMemory of bus\n";
     #endif
     storeToMemory();

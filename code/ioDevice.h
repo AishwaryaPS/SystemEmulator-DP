@@ -44,14 +44,16 @@ class keyboard : public ioDevice {
     static keyboard* _instance; 
 
     public :
+    
+    keyboard();
+    ~keyboard();
 
     static keyboard* createInstance(); 
     
     void whoami();
     void startApplication(string application);
 
-    keyboard();
-    ~keyboard();
+    void clickEnter(string application);
 };
 
 
