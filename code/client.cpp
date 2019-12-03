@@ -6,6 +6,8 @@ using namespace std;
 
 #include "ioDevice.h"
 #include "memory.h"
+#include "cpu.h"
+#include "process.h"
 
 
 /*
@@ -70,14 +72,25 @@ int main(){
 
     delete myIoDevice;
 
-    #ifdef DEBUG
-    cout << "\n\nlist of applications in queue\n";
-    while(memBlock.hasNext()){
+    // #ifdef DEBUG
+    // cout << "\n\nlist of applications in queue\n";
+    // while(memBlock.hasNext()){
         
-        cout << "xxxxxxxx" << memBlock.next().getApplicationName() << "xxxxxxxx\n";
-    }
-    #endif
+    //     cout << "xxxxxxxx" << memBlock.next().getApplicationName() << "xxxxxxxx\n";
+    // }
+    // #endif
 
+    SchedulingStrategy* schedulingStrategy = new FifoSchedule();
+
+    Context c(schedulingStrategy);
+
+    Cpu cpu(c);
+    cpu.loadJob(memBlock.next(), cpu.getClock(), false);
+    cpu.loadJob(memBlock.next(), cpu.getClock(), false);
+    cpu.startProcessing();
 
     return 0;
 }
+
+
+// why does bus control process num and not job

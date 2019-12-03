@@ -79,4 +79,10 @@ and cpu has to pick it up
 */
 extern memory memBlock;
 
+class mainmemory{
+    private:
+        int data;
+        uint32_t address;
+};
+
 #endif

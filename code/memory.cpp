@@ -1,4 +1,5 @@
 #include "memory.h"
+#include "cpu.h"
 
 
 memory :: memory():numOfJobs(0){
@@ -15,7 +16,7 @@ memory :: ~memory(){
 
 void memory :: addJob(job newJob){
     #ifdef DEBUG
-    cout << "\nSTEP 5: new job beign added to memory\n";
+    cout << "\nSTEP 5: new job being added to memory\n";
     #endif
 
     this->jobQueue.push_back(newJob);
