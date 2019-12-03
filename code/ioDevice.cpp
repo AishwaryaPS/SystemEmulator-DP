@@ -62,12 +62,13 @@ ioDevice* ioDevice :: create(deviceType type){
 keyboard implementations ---------------------------------------------------------------------------
 */
 keyboard :: keyboard(){
-    #ifdef DEBUG
-    cout << "keyboard  ctor \n";
-    #endif
-
     portNum = ioDevice::count;
     ++ioDevice::count;
+    #ifdef DEBUG
+    cout << "keyboard  ctor - portNum: "<<portNum<<"\n" ;
+    #endif
+
+    
 }
 
 keyboard :: ~keyboard(){
@@ -186,7 +187,7 @@ void port :: startApplication(string application){
     cout <<"\nSTEP 3 : port calls startapplication \n";
     cout <<"inturn calling storeToMemory of bus\n";
     #endif
-    storeToMemory();
+    storeToMemory(true);
 }
 
 void port :: whoami(){

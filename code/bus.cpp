@@ -17,13 +17,21 @@ bus :: ~bus(){
     cout <<"bus dtor \n";
     #endif
 }
+
 /*
-need to fill this with relavent code once memory component done
+bus will wrap the event as a new 'job' and add to the memory
 */
-void bus :: storeToMemory(){
+void bus :: storeToMemory(bool isIoOperation){
+    int priority = rand() % 5 ; 
     #ifdef DEBUG
     cout << "\nSTEP 4 : BUS will keep a record of this process in memory for cpu to pick up\n";
-    #endif
+    
     cout <<"application : "<<application<<" from portNum :"<<portNum<<"\n";
     cout <<"process : " << bus::processNum <<  " written to memory \n";
+    cout << "priorty set to : "<<priority <<"\n";
+    #endif
+    
+    memBlock.addJob(job(bus::processNum, application, portNum, isIoOperation, priority));
 }
+
+
