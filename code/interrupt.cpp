@@ -18,7 +18,7 @@ void interrupt :: triggerHardwareInterrupt(Cpu &cpu,ioDevice* interruptCaller, s
     cout << "hardware interrupt has been triggered\n";
     #endif
     this->interruptMsg = interruptMsg;
-    this->type = hardware;
+    this->type = interruptType::hardware;
     this->interruptingDevice = interruptCaller->whoami();
 
     cpu.interruptHandler(*this);

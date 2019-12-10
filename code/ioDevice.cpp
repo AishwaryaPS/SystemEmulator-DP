@@ -7,7 +7,6 @@ and assigned  nullptr
 */
 keyboard* keyboard :: _instance = nullptr;
 mouse* mouse :: _instance = nullptr;
-
 int ioDevice::count = 0;
 
 /*
@@ -108,7 +107,8 @@ void keyboard :: clickEnter(string application){
     cout << "click Enter method called\n";
     #endif
     port* adaptor  = new port(portNum);
-    adaptor->startApplication(application);    
+    adaptor->startApplication(application); 
+    delete adaptor;   
 }
 
 
@@ -163,6 +163,7 @@ void mouse :: doubleClick(string application){
     #endif
     port* adaptor  = new port(portNum);
     adaptor->startApplication(application);
+    delete adaptor;
 }
 
 

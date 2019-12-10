@@ -8,7 +8,6 @@
 
 using namespace std;
 
-
 enum interruptType{
     software, hardware
 };
@@ -30,8 +29,6 @@ class interrupt{
     string getInterruptingDeviceName();
     string getInterruptMsg(); 
 };
-
-
 
 
 class SchedulingStrategy{
@@ -90,17 +87,15 @@ class Cpu{
         ~Cpu();
         bool callDMA();
         bool performOperation();
-        bool startProcessing();
+        void startProcessing();
         void increaseClock();
         int getClock();
         void contextSwitch(Process* newProcess);
         void addProcess(Process p);
         Process* nextProcess();
         void loadJob(job j, int time);
-
         void interruptHandler(interrupt interruptor);
 };
-
 
 
 #endif

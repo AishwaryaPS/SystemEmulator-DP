@@ -6,7 +6,6 @@ int bus::jobNum = 0;
 
 
 bus :: bus(int portNum, string application): application(application) , portNum(portNum){
-    ++jobNum;
     #ifdef DEBUG
     cout << "bus ctor \n"; 
     #endif
@@ -32,6 +31,7 @@ void bus :: storeToMemory(bool isIoOperation){
     #endif
     
     memBlock.addJob(job(bus::jobNum, application, portNum, isIoOperation, priority));
+    ++jobNum;
 }
 
 

@@ -43,9 +43,9 @@ class keyboard : public ioDevice {
     private:
     static keyboard* _instance; 
     keyboard();
+    keyboard(const keyboard& rhs) = delete;
 
     public :
-    
     
     ~keyboard();
 
@@ -55,7 +55,6 @@ class keyboard : public ioDevice {
     void startApplication(string application);
 
     void clickEnter(string application);
-
 };
 
 
@@ -67,9 +66,10 @@ class mouse : public ioDevice {
     private:
     static mouse* _instance; 
     mouse();
+    mouse(const mouse& rhs) = delete;
 
     public : 
-    
+
     ~mouse();
 
     static mouse* createInstance();

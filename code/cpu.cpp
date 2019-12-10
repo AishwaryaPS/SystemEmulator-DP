@@ -7,7 +7,6 @@
 #include "cpu.h"
 #include "dma.h"
 
-
 using namespace std;
 
 Cpu::Cpu(){}
@@ -32,17 +31,17 @@ Cpu::~Cpu(){
     cout << "cpu destroyed\n";
 }
 
-
 bool Cpu::callDMA(){
-    #ifndef WINDOWS
     Process* nextP;
     cout << "dma called\n";
     int val = fork();
     if(val > 0){
         int s;
-        if(waitpid(val, &s, WNOHANG) > 0)
+        if(waitpid(val, &s, 0) > 0)
         {
             cout << "dma complete\n";
+            currProcess->memAccessSlow = false;
+            currProcess->setState(waiting);
             kill(val, SIGKILL);
         }
         nextP = nextProcess();
@@ -54,9 +53,7 @@ bool Cpu::callDMA(){
     else if(val == 0){
         Dma* dma = Dma::createInstance();
         dma->findMem();
-        currProcess->setState(waiting);
     }
-    #endif
     return true;
 }
 
@@ -68,7 +65,7 @@ bool Cpu::performOperation(){
         cout << "msg : " << interruptQueue.front().getInterruptMsg() << "\n";
         interruptQueue.pop_front();
     }
-    
+
     Process* nextP;
     if(currProcess->isMemAccessSlow()){
         currProcess->setState(memoryop);
@@ -100,6 +97,7 @@ bool Cpu::performOperation(){
         
 void Cpu::increaseClock(){
     ++clock;
+    sleep(1);
     cout << "clock: " << clock << "\n";
 }
 
@@ -122,7 +120,7 @@ Process* Cpu::nextProcess(){
         cout << "msg : " << interruptQueue.front().getInterruptMsg() << "\n";
         interruptQueue.pop_front();
         }
-        return nullptr;
+        return nextProcess();
     }
     return &processes[0];
 }
@@ -135,26 +133,23 @@ void Cpu::contextSwitch(Process* newProcess){
 
 void Cpu::loadJob(job j, int time){
     cout << "loading job into memory as a process - " << j.getApplicationName() << " at time - " << time << endl;
-    bool isSlow = false; // just so dma isnt called 
-    Process* p = new Process(j.isIoOperation() && isSlow, time, j.getJobNum(), j.getPortNo(), j.getApplicationName(), j.getPriority());
+    // bool isSlow = false; // just so dma isnt called 
+    Process* p = new Process(j.isIoOperation(), time, j.getJobNum(), j.getPortNo(), j.getApplicationName(), j.getPriority());
     addProcess(*p);
 }
 
-bool Cpu::startProcessing(){
+void Cpu::startProcessing(){
     currProcess = nextProcess();
     if(currProcess == nullptr)
-        return false;
+        return;
     currProcess->setState(executing);
-    return performOperation();
+    performOperation();
 }
-
 
 void Cpu::interruptHandler(interrupt interruptor){
 
     interruptQueue.push_back(interruptor);
 }
-
-
 
 void FifoSchedule::changeProcess(deque<Process>& p){
     int mini = p[0].time;
@@ -193,7 +188,7 @@ void SjfSchedule::changeProcess(deque<Process>& p){
     int mini = p[0].remainingTime;
     int index = 0;
     for(int i=1;i<p.size();++i){
-        if(p[i].remainingTime > mini && p[i].getState() != processState::memoryop){
+        if(p[i].remainingTime < mini && p[i].getState() != processState::memoryop){
             index = i;
             mini = p[i].remainingTime;
         }
@@ -215,9 +210,6 @@ Context::Context(SchedulingStrategy* strategy): schedulingStrategy(strategy){}
 
 Context::Context(){}
 
-
-
-
 interrupt :: interrupt(){
     #ifdef DEBUG
     cout << "interrupt ctor\n";
@@ -236,7 +228,7 @@ void interrupt :: triggerHardwareInterrupt(Cpu &cpu,ioDevice* interruptCaller, s
     cout << "hardware interrupt has been triggered\n";
     #endif
     this->interruptMsg = interruptMsg;
-    this->type = hardware;
+    this->type = interruptType::hardware;
     this->interruptingDevice = interruptCaller->whoami();
 
     cpu.interruptHandler(*this);
