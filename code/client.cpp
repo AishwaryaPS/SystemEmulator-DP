@@ -80,14 +80,16 @@ int main(){
     // }
     // #endif
 
-    SchedulingStrategy* schedulingStrategy = new FifoSchedule();
+    SchedulingStrategy* schedulingStrategy = new SjfSchedule();
 
     Context c(schedulingStrategy);
 
     Cpu cpu(c);
     cpu.loadJob(memBlock.next(), cpu.getClock(), false);
     cpu.loadJob(memBlock.next(), cpu.getClock(), false);
-    cpu.startProcessing();
+    bool result = cpu.startProcessing();
+    if(result == false)
+        cout << "processing complete\n";
 
     return 0;
 }

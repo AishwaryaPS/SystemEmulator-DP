@@ -60,9 +60,9 @@ class Cpu{
         Cpu(Context c);
         Cpu(deque<Process> p, Context c);
         ~Cpu();
-        void callDMA();
-        void performOperation();
-        void startProcessing();
+        bool callDMA();
+        bool performOperation();
+        bool startProcessing();
         void increaseClock();
         int getClock();
         void contextSwitch(Process* newProcess);

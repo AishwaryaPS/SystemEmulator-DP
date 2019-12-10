@@ -9,7 +9,7 @@
 using namespace std;
 
 Process::Process(bool memAccess, int t, int processNum, int port, string appName, int prior): memAccessSlow(memAccess),pid(processNum), portNo(port), applicationName(appName), priority(prior),time(t){
-    remainingTime = rand()%((15 - 0) + 1);
+    remainingTime = rand()%((20 - 0) + 1);
     cout << "remaining time for " << appName << " is " << remainingTime << endl;
     state = waiting;
 }
@@ -44,4 +44,8 @@ processState Process::getState(){
 
 string Process::getApplicationName(){
     return applicationName;
+}
+
+int Process::getRemainingTime(){
+    return remainingTime;
 }

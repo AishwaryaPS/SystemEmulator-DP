@@ -8,7 +8,7 @@
 using namespace std;
 
 enum processState{
-    waiting, executing, complete
+    waiting, memoryop, executing, complete
 };
 
 class Process{
@@ -31,6 +31,7 @@ class Process{
         bool isMemAccessSlow();
         void setState(processState);
         processState getState();
+        int getRemainingTime();
         string getApplicationName();
 
     friend class FifoSchedule;
@@ -38,6 +39,7 @@ class Process{
     friend class SjfSchedule;
     friend class RoundRobinSchedule;
     friend class SchedulingStrategy;
+    friend class Cpu;
 };
 
 #endif

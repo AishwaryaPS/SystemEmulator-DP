@@ -21,6 +21,8 @@ Cpu::Cpu(deque<Process> p, Context c){
     cout << "cpu created\n";
     clock = 0;
     processes = p;
+    if(p.empty())
+        throw invalid_argument("Must provide some processes");
     currProcess = nextProcess();
     context = c;
 }
@@ -29,7 +31,8 @@ Cpu::~Cpu(){
     cout << "cpu destroyed\n";
 }
 
-void Cpu::callDMA(){
+bool Cpu::callDMA(){
+    Process* nextP;
     cout << "dma called\n";
     int val = fork();
     if(val > 0){
@@ -39,19 +42,25 @@ void Cpu::callDMA(){
             cout << "dma complete\n";
             kill(val, SIGKILL);
         }
-        contextSwitch(nextProcess()); //should clock increase?
-        performOperation();
+        nextP = nextProcess();
+            if(nextP == nullptr)
+                return false;
+            contextSwitch(nextP); //should clock increase?
+        return performOperation();
     }
     else if(val == 0){
-        // Dma* dma = create_instance();
-        sleep(2);
+        Dma* dma = Dma::createInstance();
+        dma->findMem();
         currProcess->setState(waiting);
     }
+    return true;
 }
 
-void Cpu::performOperation(){
+bool Cpu::performOperation(){
+    Process* nextP;
     if(currProcess->isMemAccessSlow()){
-        callDMA();    
+        currProcess->setState(memoryop);
+        return callDMA();    
     }
     else{
         cout << "cpu performing operation on " << currProcess->getApplicationName() << "\n";
@@ -60,14 +69,20 @@ void Cpu::performOperation(){
         if(!check){
             currProcess->setState(complete);
             processes.erase(processes.begin());
-            contextSwitch(nextProcess());
-            performOperation();
+            nextP = nextProcess();
+            if(nextP == nullptr)
+                return false;
+            contextSwitch(nextP);
+            return performOperation();
         }
         if(clock%3==0){
-            contextSwitch(nextProcess());
-            performOperation();
+            nextP = nextProcess();
+            if(nextP == nullptr)
+                return false;
+            contextSwitch(nextP);
+            return performOperation();
         }
-        performOperation();
+        return performOperation();
     }
 }
         
@@ -89,7 +104,7 @@ Process* Cpu::nextProcess(){
     if(processes.size()==0){
         cout << "waiting for more processes\n";
         sleep(1);
-        return nextProcess();
+        return nullptr;
     }
     return &processes[0];
 }
@@ -106,17 +121,20 @@ void Cpu::loadJob(job j, int time, bool memAccess){
     addProcess(*p);
 }
 
-void Cpu::startProcessing(){
+bool Cpu::startProcessing(){
     currProcess = nextProcess();
+    if(currProcess == nullptr)
+        return false;
     currProcess->setState(executing);
-    performOperation();
+    return performOperation();
 }
 
 void FifoSchedule::changeProcess(deque<Process>& p){
     int mini = p[0].time;
     int index = 0;
     for(int i=1;i<p.size();++i){
-        if(p[i].time< mini && p[i].getState() != processState::executing){
+        // cout << p[i].getState() << "\n";
+        if(p[i].time< mini && p[i].getState() != processState::memoryop){
             index = i;
             mini = p[i].time;
         }
@@ -132,7 +150,7 @@ void PrioritySchedule::changeProcess(deque<Process>& p){
     int maxi = p[0].priority;
     int index = 0;
     for(int i=1;i<p.size();++i){
-        if(p[i].priority > maxi && p[i].getState() != processState::executing){
+        if(p[i].priority > maxi && p[i].getState() != processState::memoryop){
             index = i;
             maxi = p[i].priority;
         }
@@ -148,7 +166,7 @@ void SjfSchedule::changeProcess(deque<Process>& p){
     int mini = p[0].remainingTime;
     int index = 0;
     for(int i=1;i<p.size();++i){
-        if(p[i].remainingTime > mini && p[i].getState() != processState::executing){
+        if(p[i].remainingTime > mini && p[i].getState() != processState::memoryop){
             index = i;
             mini = p[i].remainingTime;
         }
