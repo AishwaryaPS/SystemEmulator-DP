@@ -19,7 +19,7 @@ class bus{
     void storeToMemory(bool isIoOperation);
    
     protected:
-    static int processNum;
+    static int jobNum;
     string application;
     int portNum;
 

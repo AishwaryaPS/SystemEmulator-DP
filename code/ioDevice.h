@@ -26,7 +26,7 @@ class ioDevice{
     virtual ~ioDevice();
 
     virtual void startApplication(string application) = 0;
-    virtual void whoami() = 0;
+    virtual string whoami() = 0;
 
     static ioDevice* create(deviceType type);
 
@@ -42,18 +42,20 @@ singleton keyboard classe
 class keyboard : public ioDevice {
     private:
     static keyboard* _instance; 
+    keyboard();
 
     public :
     
-    keyboard();
+    
     ~keyboard();
 
     static keyboard* createInstance(); 
     
-    void whoami();
+    string whoami();
     void startApplication(string application);
 
     void clickEnter(string application);
+
 };
 
 
@@ -64,15 +66,15 @@ class mouse : public ioDevice {
 
     private:
     static mouse* _instance; 
+    mouse();
 
     public : 
     
-    mouse();
     ~mouse();
 
     static mouse* createInstance();
 
-    void whoami();
+    string whoami();
     void startApplication(string application);
 
     void doubleClick(string application);
@@ -91,7 +93,7 @@ class port :  private bus, public ioDevice{
 
     void startApplication(string application);
 
-    void whoami();
+    string whoami();
 
 }; 
 

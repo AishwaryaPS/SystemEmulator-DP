@@ -1,5 +1,5 @@
 // compile with -DDEBUG=1 for debug couts as well 
-
+//g++ -std=c++11 -DDEBUG -DWINDOWS client.cpp cpu.cpp dma.cpp ioDevice.cpp job.cpp memory.cpp process.cpp bus.cpp
 
 #include <iostream>
 using namespace std;
@@ -8,6 +8,7 @@ using namespace std;
 #include "memory.h"
 #include "cpu.h"
 #include "process.h"
+
 
 
 /*
@@ -26,28 +27,31 @@ int main(){
         and make sure only one instance of that device is created
     */
 
+    string deviceName;
+
     deviceType type = typeMouse;
     ioDevice* myIoDevice = ioDevice::create(type); 
-    myIoDevice->whoami();
+    deviceName = myIoDevice->whoami();
+    cout << deviceName;
 
     myIoDevice = ioDevice::create(type); 
-    myIoDevice->whoami();
+    deviceName = myIoDevice->whoami();
 
     delete myIoDevice;
 
     type = typeKeyboard;
     myIoDevice = ioDevice::create(type); 
-    myIoDevice->whoami();
+    deviceName = myIoDevice->whoami();
 
     myIoDevice = ioDevice::create(type); 
-    myIoDevice->whoami();
+    deviceName = myIoDevice->whoami();
 
     delete myIoDevice;
 
     #ifdef EXCEPTION_CASES
     type = notSupportedDevice;
     myIoDevice = ioDevice::create(type); 
-    myIoDevice->whoami();
+    deviceName = myIoDevice->whoami();
 
     delete myIoDevice;
     #endif
@@ -70,7 +74,7 @@ int main(){
 
     myIoDevice->startApplication("Paint");
 
-    delete myIoDevice;
+    //delete myIoDevice;
 
     // #ifdef DEBUG
     // cout << "\n\nlist of applications in queue\n";
@@ -85,12 +89,23 @@ int main(){
     Context c(schedulingStrategy);
 
     Cpu cpu(c);
-    cpu.loadJob(memBlock.next(), cpu.getClock(), false);
-    cpu.loadJob(memBlock.next(), cpu.getClock(), false);
+    cpu.loadJob(memBlock.next(), cpu.getClock());
+    cpu.loadJob(memBlock.next(), cpu.getClock());
+
+    interrupt event;
+    event.triggerHardwareInterrupt(cpu,myIoDevice,"ctrl+x");
+    event.triggerHardwareInterrupt(cpu,myIoDevice,"ctrl+z");
+
+    /*
+    for at this point */
     bool result = cpu.startProcessing();
+    
+    event.triggerHardwareInterrupt(cpu,myIoDevice,"ctrl+y");
+
     if(result == false)
         cout << "processing complete\n";
 
+    delete myIoDevice;
     return 0;
 }
 

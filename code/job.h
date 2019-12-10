@@ -11,7 +11,7 @@ cpu will pick up job form memory
 */
 class job{
 
-    int processNum;
+    int jobNum;
     string applicationName;
     int portNo;
     bool ioOperation;
@@ -19,10 +19,10 @@ class job{
 
     public:
 
-    job(int processNum, string applicationName, int portNo, bool ioOperation,int priority);
+    job(int jobNum, string applicationName, int portNo, bool ioOperation,int priority);
     ~job();
     
-    int getProcessNum();
+    int getJobNum();
     int getPortNo();
     int getPriority();
     bool isIoOperation();

@@ -4,8 +4,8 @@
 job class implementations ----------------------------------------------------------------------------------
 */
 
-job :: job(int processNum, string applicationName, int portNo, bool ioOperation,int priority) :
-processNum(processNum), applicationName(applicationName), portNo(portNo), ioOperation(ioOperation), priority(priority){
+job :: job(int jobNum, string applicationName, int portNo, bool ioOperation,int priority) :
+jobNum(jobNum), applicationName(applicationName), portNo(portNo), ioOperation(ioOperation), priority(priority){
     #ifdef DEBUG
     cout << "job ctor \n";
     #endif
@@ -18,8 +18,8 @@ job :: ~job(){
 }
 
 
-int job :: getProcessNum(){
-    return this->processNum;
+int job :: getJobNum(){
+    return this->jobNum;
 }
 int job :: getPortNo(){
     return this->portNo;

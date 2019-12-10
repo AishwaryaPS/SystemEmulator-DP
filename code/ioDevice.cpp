@@ -77,8 +77,9 @@ keyboard :: ~keyboard(){
     #endif
     keyboard :: _instance = nullptr;
 }
-void keyboard :: whoami(){
+string keyboard :: whoami(){
     cout << "ioDevice : keyboard \n"; 
+    return "keyboard"; 
 }
 void keyboard :: startApplication(string application){
     cout << "Event triggered by keyboard\n";
@@ -131,8 +132,9 @@ mouse :: ~mouse(){
     #endif
     mouse :: _instance = nullptr;
 }
-void mouse :: whoami(){
-    cout << "ioDevice : mouse \n"; 
+string mouse :: whoami(){
+    cout << "ioDevice : mouse \n";
+    return "mouse"; 
 }
 void mouse :: startApplication(string application){
     cout << "Event triggered by mouse : "<<application<<"\n";
@@ -190,6 +192,7 @@ void port :: startApplication(string application){
     storeToMemory(true);
 }
 
-void port :: whoami(){
+string port :: whoami(){
     cout <<"port adaptor\n";
+    return "port-adaptor\n";
 }

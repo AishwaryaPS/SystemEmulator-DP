@@ -4,8 +4,35 @@
 #include <deque>
 #include "process.h"
 #include "job.h"
+#include "ioDevice.h"
 
 using namespace std;
+
+
+enum interruptType{
+    software, hardware
+};
+
+class interrupt;
+class Cpu;
+
+class interrupt{
+
+    string interruptMsg;
+    interruptType type;
+    string interruptingDevice;
+
+    public :
+    interrupt();
+    ~interrupt();
+
+    void triggerHardwareInterrupt(Cpu &cpu,ioDevice* interruptCaller, string interruptMsg);
+    string getInterruptingDeviceName();
+    string getInterruptMsg(); 
+};
+
+
+
 
 class SchedulingStrategy{
     public:
@@ -55,6 +82,7 @@ class Cpu{
         int clock;
         deque<Process> processes;
         Context context;
+        deque<interrupt> interruptQueue;
     public:
         Cpu();
         Cpu(Context c);
@@ -68,8 +96,11 @@ class Cpu{
         void contextSwitch(Process* newProcess);
         void addProcess(Process p);
         Process* nextProcess();
-        void loadJob(job j, int time, bool memAccess);
+        void loadJob(job j, int time);
+
+        void interruptHandler(interrupt interruptor);
 };
+
 
 
 #endif
