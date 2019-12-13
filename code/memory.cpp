@@ -5,7 +5,7 @@
 
 /*
     multiple memory classes implementation
-    ready queue with jobs is held in the memory class
+    memory class is for the part of the memory that is used by the OS
     mainmemory class that holds data relevant to processes
     mainmemorypool is a singleton class
     it is an object pool used to handle mainmemory

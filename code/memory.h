@@ -10,7 +10,7 @@ using namespace std;
 
 /*
     multiple memory classes implementation
-    ready queue with jobs is held in the memory class
+    memory class is for the part of the memory that is used by the OS
 */
 class memory{  
 
