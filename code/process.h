@@ -21,17 +21,15 @@ class Process{
         string applicationName;
         int portNo;
         processState state;
-        vector<mainmemory> associatedMem;
     public:
         Process(bool memAccess, int t, int processNum, int port, string appName, int prior);
         Process(bool memAccess, int t, int processNum, int port, string appName, int prior, int rem);
         ~Process();
-        void addMem(mainmemory m);
+        void addMem(int data);
         bool decreaseRemainingTime(int t); // returns false if remaining time is 0
         bool isMemAccessSlow();
         void setState(processState);
         processState getState();
-        int getRemainingTime();
         string getApplicationName();
 
     friend class FifoSchedule;

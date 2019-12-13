@@ -7,7 +7,7 @@ using namespace std;
 #include "job.h"
 #include "memory.h"
 /*
-bus class will keep updating the processes into memory 
+bus class will keep adding the processes into memory 
 from which the cpu can fetch one by one 
 */
 class bus{
@@ -24,6 +24,5 @@ class bus{
     int portNum;
 
 };
-
 
 #endif

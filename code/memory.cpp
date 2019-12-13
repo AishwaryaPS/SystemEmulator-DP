@@ -1,6 +1,15 @@
 #include "memory.h"
 #include "cpu.h"
 
+#include <vector>
+
+/*
+    multiple memory classes implementation
+    ready queue with jobs is held in the memory class
+    mainmemory class that holds data relevant to processes
+    mainmemorypool is a singleton class
+    it is an object pool used to handle mainmemory
+*/
 
 memory :: memory():numOfJobs(0){
     #ifdef DEBUG
@@ -38,4 +47,80 @@ job memory :: next(){
     job temp(jobQueue.front());
     jobQueue.pop_front();
     return temp;
+}
+
+int mainmemory::getData(){
+    return data;
+}
+
+void mainmemory::setData(int val){
+    data = val;
+}
+
+bool mainmemory::isMemObjUsed(){
+    return isUsed;
+}
+
+void mainmemory::setAsUsed(int p){
+    isUsed = true;
+    pid = p;
+}
+
+void mainmemory::releaseMem(){
+    isUsed = false;
+}
+
+int mainmemory::getPid(){
+    return pid;
+}
+
+mainmemorypool* mainmemorypool::_instance = nullptr;
+
+/*
+    find free memory to allocate to processes
+*/
+mainmemory* mainmemorypool::findFreeMem(){
+    for(int i=0;i<memoryPool.size();++i){
+        if(memoryPool[i].isMemObjUsed() == false){
+            return &memoryPool[i];
+        }
+    }
+
+    return nullptr;
+}
+
+/*
+    used by dma to find process relevant memory
+*/
+mainmemory* mainmemorypool::findUsedMem(int pid){
+    for(int i=0;i<memoryPool.size();++i){
+        if(memoryPool[i].isMemObjUsed() && memoryPool[i].getPid() == pid){
+            return &memoryPool[i];
+        }
+    }
+
+    return nullptr;
+}
+
+/*
+    used by process destructor to free the memory occupied by that process
+*/
+void mainmemorypool::freeMem(int pid){
+    for(int i=0;i<memoryPool.size();++i){
+        if(memoryPool[i].isMemObjUsed() && memoryPool[i].getPid() == pid){
+            cout << "freeing memory\n";
+            memoryPool[i].releaseMem();
+        }
+    }
+}
+
+/*
+    get singleton instance
+*/
+mainmemorypool* mainmemorypool::getInstance(){
+    if(mainmemorypool::_instance == nullptr){       
+        cout << "creating a new instance of mainmemorypool \n";
+        mainmemorypool::_instance = new mainmemorypool();
+    }
+    return mainmemorypool::_instance;
 }

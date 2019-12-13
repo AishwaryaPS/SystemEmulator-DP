@@ -12,11 +12,15 @@ using namespace std;
 
 
 /*
-memeBlock declared extern in memory.h
-a gloack block of memory can now be accessed 
+memBlock declared extern in memory.h
+a global block of memory can now be accessed 
 just have to include "memory.h"
 */
 memory memBlock;
+
+/*
+global variables that is to be shared between the threads
+*/
 SchedulingStrategy* schedulingStrategy = new FifoSchedule();
 
 Context c(schedulingStrategy);
@@ -32,6 +36,9 @@ void addProcess(){
     cpu.addProcess(p);
 }
 
+/*
+    threaded function to paralelly receive input and fire processes or interrupts from the user while the cpu is processing
+*/
 void* getNewApps(void* arg){
     cout << "Enter 1 for Paint\n2 for Browser\n3 for Solitaire\n4 for Word\n5 for Excel\n6 for Background process\n7 for interrupt\nany other number to end\n";
     int choice;
@@ -84,26 +91,24 @@ int main(){
         i want to create an io device of a particular type 
         and make sure only one instance of that device is created
     */
+    #ifdef SAMPLE_CODE
+    type = typeMouse;
+    myIoDevice = ioDevice::create(type); 
+    myIoDevice->whoami();
 
-    // type = typeMouse;
-    // myIoDevice = ioDevice::create(type); 
-    // myIoDevice->whoami();
+    myIoDevice = ioDevice::create(type); 
+    myIoDevice->whoami();
 
-    // myIoDevice = ioDevice::create(type); 
-    // myIoDevice->whoami();
+    delete myIoDevice;
 
-    // delete myIoDevice;
+    type = typeKeyboard;
+    myIoDevice = ioDevice::create(type); 
+    myIoDevice->whoami();
 
-    // type = typeKeyboard;
-    // myIoDevice = ioDevice::create(type); 
-    // myIoDevice->whoami();
+    myIoDevice = ioDevice::create(type); 
+    myIoDevice->whoami();
 
-    // myIoDevice = ioDevice::create(type); 
-    // myIoDevice->whoami();
-
-    // delete myIoDevice;
-
-    #ifdef EXCEPTION_CASES
+    delete myIoDevice;
     type = notSupportedDevice;
     myIoDevice = ioDevice::create(type); 
     myIoDevice->whoami();
@@ -121,44 +126,33 @@ int main(){
 
     bus wraps this as a new 'job' 
     and is added to the jobQueue of the 'memory'
+    from jobQueue it is loaded in main memory as a process
     */
-    // type = typeKeyboard;
-    // myIoDevice = ioDevice::create(type); 
 
     myIoDevice->startApplication("Browser");
 
     myIoDevice->startApplication("Paint");
 
-    // delete myIoDevice;
-
-    // #ifdef DEBUG
-    // cout << "\n\nlist of applications in queue\n";
-    // while(memBlock.hasNext()){
+    #ifdef SAMPLE_CODE
+    cout << "\n\nlist of applications in queue\n";
+    while(memBlock.hasNext()){
         
-    //     cout << "xxxxxxxx" << memBlock.next().getApplicationName() << "xxxxxxxx\n";
-    // }
-    // #endif
+        cout << "xxxxxxxx" << memBlock.next().getApplicationName() << "xxxxxxxx\n";
+    }
+    #endif
 
-    // SchedulingStrategy* schedulingStrategy = new SjfSchedule();
-
-    // Context c(schedulingStrategy);
-
-    // Cpu cpu(c);
+// sample processes
     cpu.loadJob(memBlock.next(), cpu.getClock());
     cpu.loadJob(memBlock.next(), cpu.getClock());
 
     pthread_t thread_id;
     pthread_create(&thread_id, nullptr, getNewApps, nullptr);
 
+// sample interrupts
     event.triggerHardwareInterrupt(cpu,myIoDevice,"ctrl+x");
     event.triggerHardwareInterrupt(cpu,myIoDevice,"ctrl+z");
 
     cpu.startProcessing();
 
-    event.triggerHardwareInterrupt(cpu,myIoDevice,"ctrl+y");
-
     return 0;
 }
-
-
-// why does bus control process num and not job

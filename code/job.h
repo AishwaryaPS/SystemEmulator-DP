@@ -5,9 +5,9 @@
 using namespace std;
 /*
 job class 
-contains feilds which represent a job to be picked up by cpu
+contains fields which represent a job to be picked up by cpu
 bus will create a job and drop off at memeory 
-cpu will pick up job form memory
+cpu will pick up job from memory
 */
 class job{
 

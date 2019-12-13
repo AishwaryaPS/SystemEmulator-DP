@@ -30,7 +30,9 @@ class interrupt{
     string getInterruptMsg(); 
 };
 
-
+/*
+    different strategies
+*/
 class SchedulingStrategy{
     public:
         SchedulingStrategy(){}
@@ -66,6 +68,9 @@ class RoundRobinSchedule: public SchedulingStrategy{
         void changeProcess(deque<Process>&);
 };
 
+/*
+    Context for implementing strategy pattern
+*/
 class Context{
     public:
         SchedulingStrategy* schedulingStrategy;

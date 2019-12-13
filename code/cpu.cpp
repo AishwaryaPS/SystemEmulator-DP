@@ -31,6 +31,9 @@ Cpu::~Cpu(){
     cout << "cpu destroyed\n";
 }
 
+/*
+    to take the load of slow memory accesses away from the cpu
+*/
 bool Cpu::callDMA(){
     Process* nextP;
     cout << "dma called\n";
@@ -52,13 +55,15 @@ bool Cpu::callDMA(){
     }
     else if(val == 0){
         Dma* dma = Dma::createInstance();
-        dma->findMem();
+        dma->findMem(currProcess->pid);
     }
     return true;
 }
 
+/*
+    cpu processing step
+*/
 bool Cpu::performOperation(){
-
     while(!interruptQueue.empty()){
         cout << "process stalled for taking care of interrupt ... \n";
         cout << "interrupted by : " << interruptQueue.front().getInterruptingDeviceName() << "\n";
@@ -77,6 +82,8 @@ bool Cpu::performOperation(){
         bool check = currProcess->decreaseRemainingTime(1);
         if(!check){
             currProcess->setState(complete);
+            mainmemorypool* memPool = mainmemorypool::getInstance();
+            memPool->freeMem(currProcess->pid);
             processes.erase(processes.begin());
             nextP = nextProcess();
             if(nextP == nullptr)
@@ -109,6 +116,9 @@ void Cpu::addProcess(Process p){
     processes.push_back(p);
 }
 
+/*
+    to get the next process for the context switch
+*/
 Process* Cpu::nextProcess(){
     context.schedulingStrategy->changeProcess(processes);
     if(processes.size()==0){
@@ -131,12 +141,15 @@ void Cpu::contextSwitch(Process* newProcess){
     currProcess->setState(executing);
 }
 
+/*
+    loads the jobs as a process that the cpu will execute
+*/
 void Cpu::loadJob(job j, int time){
     cout << "loading job into memory as a process - " << j.getApplicationName() << " at time - " << time << endl;
-    // bool isSlow = false; // just so dma isnt called 
-    Process* p = new Process(j.isIoOperation(), time, j.getJobNum(), j.getPortNo(), j.getApplicationName(), j.getPriority());
-    addProcess(*p);
+    Process p(j.isIoOperation(), time, j.getJobNum(), j.getPortNo(), j.getApplicationName(), j.getPriority());
+    addProcess(p);
 }
+
 
 void Cpu::startProcessing(){
     currProcess = nextProcess();
@@ -146,16 +159,23 @@ void Cpu::startProcessing(){
     performOperation();
 }
 
+/*
+    adding a new interrupt
+*/
 void Cpu::interruptHandler(interrupt interruptor){
 
     interruptQueue.push_back(interruptor);
 }
 
+/*
+    Strategy pattern implemented here to give different possible scheduling algorithms
+    Client chooses one for the cpu and it stays the same for the current execution
+*/
+
 void FifoSchedule::changeProcess(deque<Process>& p){
     int mini = p[0].time;
     int index = 0;
     for(int i=1;i<p.size();++i){
-        // cout << p[i].getState() << "\n";
         if(p[i].time< mini && p[i].getState() != processState::memoryop){
             index = i;
             mini = p[i].time;
@@ -223,7 +243,10 @@ interrupt :: ~interrupt(){
     #endif
 }
 
-void interrupt :: triggerHardwareInterrupt(Cpu &cpu,ioDevice* interruptCaller, string interruptMsg){
+/*
+    Creating a new interrupt that should be handled
+*/
+void interrupt :: triggerHardwareInterrupt(Cpu &cpu, ioDevice* interruptCaller, string interruptMsg){
     #ifdef DEBUG
     cout << "hardware interrupt has been triggered\n";
     #endif
